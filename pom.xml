@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+	<groupId>org.graphstream</groupId>
+	<artifactId>gs-gephi</artifactId>
+	<version>0.1-git</version>
+
+	<name>gs-gephi</name>
+	<description>
+    An interconnection project between Gephi and GraphStream
+  </description>
+  <url>http://github.com/graphstream/gs-gephi</url>
+
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <outputDirectory>bin</outputDirectory>
+    <testSourceDirectory>src-test</testSourceDirectory>
+    <defaultGoal>compile</defaultGoal>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20070829</version>
+    </dependency>
+    <dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.3.1</version>
+			<optional>false</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.graphstream</groupId>
+			<artifactId>gs-core</artifactId>
+			<version>1.0</version>
+			<optional>false</optional>
+		</dependency>
+	</dependencies>
+
+</project>
