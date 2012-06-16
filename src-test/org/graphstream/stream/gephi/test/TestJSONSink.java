@@ -5,13 +5,15 @@ import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.stream.gephi.JSONSink;
 
 public class TestJSONSink {
-	public static void main(String args[]) {
-        Graph graph = new SingleGraph("Tutorial 1");
+    
+    public static void main(String args[]) {
+        
+	Graph graph = new SingleGraph("Tutorial 1");
 
         JSONSink jsonSink = new JSONSink("localhost", 8080, "workspace0");
-		graph.addSink(jsonSink);
+	graph.addSink(jsonSink);
 		
-		//graph.display();
+	//graph.display();
 		
         graph.addNode("A");
         graph.addNode("B");
@@ -22,13 +24,12 @@ public class TestJSONSink {
         graph.addEdge("CA", "C", "A");
         sleep();
         
-
-		graph.clear();
-	}
+	graph.clear();
+    }
 	
-	protected static void sleep() {
+    protected static void sleep() {
         try {
-        	Thread.sleep(1000); 
+            Thread.sleep(1000); 
         } catch (Exception e) {}
     }
 }

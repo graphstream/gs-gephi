@@ -10,7 +10,7 @@ package org.graphstream.stream.gephi;
 public class JSONEventConstants {
 	
     public enum Types {
-    	AN("an"),
+	AN("an"),
     	CN("cn"),
     	DN("dn"),
     	AE("ae"),
@@ -21,11 +21,11 @@ public class JSONEventConstants {
         private String value;
 
         private Types(String value) {
-                this.value = value;
+            this.value = value;
         }
 
         public String value() {
-                return value;
+            return value;
         }
     }
 	
