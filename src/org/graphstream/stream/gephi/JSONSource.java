@@ -24,10 +24,25 @@ import org.graphstream.stream.SourceBase;
  */
 public class JSONSource extends SourceBase {
 
-    private String host; // the host of the Gephi server
-    private int port; // the port of the Gephi server
-    private String workspace; // the workspace name of the Gephi server
-    private String sourceId; // the gephi source ID
+    /**
+     * the host of the Gephi server
+     */
+    private String host;
+    
+    /**
+     * the port of the Gephi server
+     */
+    private int port;
+    
+    /**
+     * the workspace name of the Gephi server
+     */
+    private String workspace;
+    
+    /**
+     * the gephi source ID
+     */
+    private String sourceId;
 
     /**
      * 

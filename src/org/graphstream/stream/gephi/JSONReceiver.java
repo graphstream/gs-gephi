@@ -11,10 +11,14 @@ import java.util.Iterator;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.AbstractElement.AttributeChangeEvent;
 import org.graphstream.stream.gephi.JSONEventConstants.Fields;
 import org.graphstream.stream.gephi.JSONEventConstants.Types;
-import org.graphstream.stream.SourceBase;
+import org.graphstream.stream.thread.ThreadProxyPipe;
+import org.graphstream.stream.Source;
+import org.graphstream.stream.SourceBase.ElementType;
 
 /**
  * connect GraphStream to Gephi
@@ -22,13 +26,37 @@ import org.graphstream.stream.SourceBase;
  * @author wumalbert
  *
  */
-public class JSONReceiver extends SourceBase {
+public class JSONReceiver extends Thread {
 
-    private String host; // the host of the Gephi server
-    private int port; // the port of the Gephi server
-    private String workspace; // the workspace name of the Gephi server
-    private String sourceId; // the gephi source ID
+    /**
+     * the host of the Gephi server
+     */
+    private String host;
+    
+    /**
+     * the port of the Gephi server
+     */
+    private int port;
+    
+    /**
+     * the workspace name of the Gephi server
+     */
+    private String workspace;
+    
+    /**
+     * the gephi source ID
+     */
+    private String sourceId; 
+    
+    /**
+     * The current pipe commands are being written to.
+    */
+    protected ThreadProxyPipe currentStream;
 
+    /**
+     * URLConnection which is responsible for connecting to Gephi 
+     */
+    private URLConnection urlConnection;
     /**
      * 
      * @param host, the host of the Gephi server
@@ -40,7 +68,55 @@ public class JSONReceiver extends SourceBase {
 	this.port = port;
 	this.workspace = workspace;
 	this.sourceId = String.format("<Gephi json stream %x>", System.nanoTime());
+	Graph g = new MultiGraph("graph",false,true);
+	currentStream = new ThreadProxyPipe(g);
+	//currentStream = new ThreadProxyPipe();
+	init();
+	start();
     }
+    
+    public ThreadProxyPipe getStream() {
+	return currentStream;
+    }
+    /**
+     * connect to Gephi
+     */
+    protected void init() {
+	try {
+	    //connect to Gephi server
+	    //use getGraph operation to get graphs from Gephi with the following URL 
+	    //http://localhost:8080/workspace0?operation=getGrap
+            URL url = new URL("http", host, port, "/"+workspace+"?operation=getGraph");
+            urlConnection = url.openConnection();
+            urlConnection.setDoOutput(false);
+            urlConnection.connect();
+	} catch (IOException ex) {
+	    //can't connect to gephi
+	    ex.printStackTrace();
+	}
+    }
+    
+    /**
+     * process the stream received from Gephi
+     */
+    public void run() {
+        //read the result from the servers
+        try {
+            InputStream inputStream = urlConnection.getInputStream();
+            BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            while ((line = bf.readLine()) != null) {
+                System.out.println(line);
+                // each line is a event in Gephi
+                parse(line);
+            }
+            inputStream.close();
+		    
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+    } 
     
     /**
      * Parse the JSON string received from Gephi as events to be processed by GraphStream
@@ -108,7 +184,7 @@ public class JSONReceiver extends SourceBase {
         
         if (gObjs.has("filter")) {
             if (gObjs.getString("filter").equals("ALL")) {
-        	this.sendGraphCleared(sourceId);
+        	currentStream.sendGraphCleared(sourceId);
             }
             /*Map<String, Object> attributes = null;
             if (gObjs.has("attributes")) {
@@ -135,14 +211,14 @@ public class JSONReceiver extends SourceBase {
             
             switch( eventType ) {
             case AN:
-        	this.sendNodeAdded(sourceId, elementId);
+        	currentStream.sendNodeAdded(sourceId, elementId);
         	this.sendAttributes(gObj, elementId, ElementType.NODE, AttributeChangeEvent.ADD);
         	break;
             case CN:
         	this.sendAttributes(gObj, elementId, ElementType.NODE, AttributeChangeEvent.CHANGE);
         	break;
             case DN:
-        	this.sendNodeRemoved(sourceId, elementId);
+        	currentStream.sendNodeRemoved(sourceId, elementId);
         	break;
             case AE:
                 String fromNodeId = gObj.getString(Fields.SOURCE.value());
@@ -152,7 +228,7 @@ public class JSONReceiver extends SourceBase {
                 if (gObj.has(Fields.DIRECTED.value())) {
                     directed = Boolean.valueOf(gObj.getString(Fields.DIRECTED.value()));
                 }
-                this.sendEdgeAdded(sourceId, elementId, fromNodeId, toNodeId, directed);
+                currentStream.sendEdgeAdded(sourceId, elementId, fromNodeId, toNodeId, directed);
                
                 Iterator<String> i2 = gObj.keys();
                 while (i2.hasNext()) {
@@ -163,7 +239,7 @@ public class JSONReceiver extends SourceBase {
                     if (key.equals(Fields.DIRECTED.value())) continue;
 
                     Object value = gObj.get(key);
-                    this.sendAttributeChangedEvent(sourceId, elementId, ElementType.EDGE, 
+                    currentStream.sendAttributeChangedEvent(sourceId, elementId, ElementType.EDGE, 
                 	    key, AttributeChangeEvent.ADD, null, value);
                 }
         	break;
@@ -171,7 +247,7 @@ public class JSONReceiver extends SourceBase {
         	this.sendAttributes(gObj, elementId, ElementType.EDGE, AttributeChangeEvent.CHANGE);
         	break;
             case DE:
-        	this.sendEdgeRemoved(sourceId, elementId);
+        	currentStream.sendEdgeRemoved(sourceId, elementId);
         	break;
             
             }
@@ -192,42 +268,7 @@ public class JSONReceiver extends SourceBase {
 	while (it.hasNext()) {
 	    String key = it.next();
 	    Object value = gObj.get(key);
-	    sendAttributeChangedEvent(sourceId, elementId, elementType, key, changeEventType, null, value);
+	    currentStream.sendAttributeChangedEvent(sourceId, elementId, elementType, key, changeEventType, null, value);
 	}
     }
-    
-    /**
-     * connect to Gephi and process the stream received from Gephi
-     */
-    public void processStream() {
-	try {
-	    //connect to Gephi server
-	    //use getGraph operation to get graphs from Gephi with the following URL 
-	    //http://localhost:8080/workspace0?operation=getGrap
-            URL url = new URL("http", host, port, "/"+workspace+"?operation=getGraph");
-            URLConnection connection = url.openConnection();
-            connection.setDoOutput(false);
-            connection.connect();
-    
-            //read the result from the servers
-            try {
-                InputStream inputStream = connection.getInputStream();
-                BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream));
-                String line;
-                while ((line = bf.readLine()) != null) {
-                    System.out.println(line);
-                    // each line is a event in Gephi
-                    parse(line);
-                }
-                inputStream.close();
-    		    
-            } catch (UnknownServiceException e) {
-                // protocol doesn't support output
-            	e.printStackTrace();
-                return;
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    } 
 }
