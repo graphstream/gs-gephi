@@ -24,7 +24,7 @@ public class TestJSONSink {
         graph.addEdge("CA", "C", "A");
         sleep();
         
-	graph.clear();
+	//graph.clear();
     }
 	
     protected static void sleep() {

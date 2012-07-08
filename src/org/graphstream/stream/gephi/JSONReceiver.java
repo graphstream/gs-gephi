@@ -57,6 +57,12 @@ public class JSONReceiver extends Thread {
      * URLConnection which is responsible for connecting to Gephi 
      */
     private URLConnection urlConnection;
+    
+    /**
+     * program debug mode
+     */
+    private boolean debug;
+    
     /**
      * 
      * @param host, the host of the Gephi server
@@ -68,11 +74,57 @@ public class JSONReceiver extends Thread {
 	this.port = port;
 	this.workspace = workspace;
 	this.sourceId = String.format("<Gephi json stream %x>", System.nanoTime());
+	this.debug = false;
+	
 	Graph g = new MultiGraph("graph",false,true);
 	currentStream = new ThreadProxyPipe(g);
 	//currentStream = new ThreadProxyPipe();
 	init();
 	start();
+    }
+
+    /**
+     * 
+     * @param host, the host of the Gephi server
+     * @param port, the port of the Gephi server
+     * @param workspace, the workspace name of the Gephi server
+     * @param debug, the program mode
+     */
+    public JSONReceiver(String host, int port, String workspace, boolean debug) {
+	this.host = host;
+	this.port = port;
+	this.workspace = workspace;
+	this.sourceId = String.format("<Gephi json stream %x>", System.nanoTime());
+	this.debug = debug;
+	
+	Graph g = new MultiGraph("graph",false,true);
+	currentStream = new ThreadProxyPipe(g);
+	//currentStream = new ThreadProxyPipe();
+	init();
+	start();
+    }
+    
+    /**
+     * set debug mode
+     * @param debug
+     */
+    public void setDebug(boolean debug) {
+	this.debug = debug;
+    }
+    
+    /**
+     * set debug message
+     * @param message
+     * @param data
+     */
+    private void debug(String message, Object... data) {
+	// System.err.print( LIGHT_YELLOW );
+	// System.err.printf("[//%s:%d | ", host, port);
+	// System.err.print( RESET );
+	System.err.printf(message, data);
+	// System.err.print( LIGHT_YELLOW );
+	System.err.printf("]%n");
+	// System.err.println( RESET );
     }
     
     public ThreadProxyPipe getStream() {
@@ -106,7 +158,7 @@ public class JSONReceiver extends Thread {
             BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream));
             String line;
             while ((line = bf.readLine()) != null) {
-                System.out.println(line);
+                if(debug) debug(line);
                 // each line is a event in Gephi
                 parse(line);
             }

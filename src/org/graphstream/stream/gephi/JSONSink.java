@@ -19,12 +19,30 @@ import org.json.*;
  *
  */
 public class JSONSink implements Sink {
+    /**
+     * the host of the Gephi server
+     */
+    private String host;
     
-    private String host; // the host of the Gephi server
-    private int port; // the port of the Gephi server
-    private String workspace; // the workspace name of the Gephi server
-	
-    private static String EOL = "\r\n"; // End of Line
+    /**
+     * the port of the Gephi server
+     */
+    private int port;
+    
+    /**
+     * the workspace name of the Gephi server
+     */
+    private String workspace;
+    
+    /**
+     * End of Line
+     */
+    private static String EOL = "\r\n";
+    
+    /**
+     * program debug mode
+     */
+    private boolean debug;
 	
     /**
      * A sink which can send event to an Gephi server in JSON format
@@ -36,8 +54,46 @@ public class JSONSink implements Sink {
 	this.host = host;
 	this.port = port;
 	this.workspace = workspace;
+	this.debug = false;
+    }
+    
+    /**
+     * A sink which can send event to an Gephi server in JSON format
+     * @param host, the host of the Gephi server
+     * @param port, the port of the Gephi server
+     * @param workspace, the workspace name of the Gephi server
+     * @param debug, the program mode 
+     */
+    public JSONSink(String host, int port, String workspace, boolean debug) {
+	this.host = host;
+	this.port = port;
+	this.workspace = workspace;
+	this.debug = debug;
     }
 	
+    /**
+     * set debug mode
+     * @param debug
+     */
+    public void setDebug(boolean debug) {
+	this.debug = debug;
+    }
+    
+    /**
+     * set debug message
+     * @param message
+     * @param data
+     */
+    private void debug(String message, Object... data) {
+	// System.err.print( LIGHT_YELLOW );
+	// System.err.printf("[//%s:%d | ", host, port);
+	// System.err.print( RESET );
+	System.err.printf(message, data);
+	// System.err.print( LIGHT_YELLOW );
+	System.err.printf("]%n");
+	// System.err.println( RESET );
+    }
+    
     /* (non-Javadoc)
      * @see org.graphstream.stream.AttributeSink#edgeAttributeAdded(java.lang.String, long, java.lang.String, java.lang.String, java.lang.Object)
      */
@@ -56,7 +112,8 @@ public class JSONSink implements Sink {
     	} catch (JSONException e) {
     	    e.printStackTrace();
     	}
-    	System.out.println(jsonObj.toString());
+    	if (debug) debug(jsonObj.toString());
+    	
     	//send jsonObj to Gephi
     	doSend(jsonObj, "updateGraph");
     
@@ -80,7 +137,8 @@ public class JSONSink implements Sink {
     	} catch (JSONException e) {
     	    e.printStackTrace();
     	}
-    	System.out.println(jsonObj.toString());
+    	if (debug) debug(jsonObj.toString());
+    	
     	//send jsonObj to Gephi
     	doSend(jsonObj, "updateGraph");
     
@@ -104,7 +162,8 @@ public class JSONSink implements Sink {
     	} catch (JSONException e) {
     	    e.printStackTrace();
     	}
-    	System.out.println(jsonObj.toString());
+    	if (debug) debug(jsonObj.toString());
+    	
     	//send jsonObj to Gephi
     	doSend(jsonObj, "updateGraph");
     
@@ -126,7 +185,8 @@ public class JSONSink implements Sink {
     	} catch (JSONException e) {
     	    e.printStackTrace();
     	}
-    	System.out.println(jsonObj.toString());
+    	if (debug) debug(jsonObj.toString());
+    	
     	//send jsonObj to Gephi
     	doSend(jsonObj, "updateGraph");
     
@@ -148,7 +208,8 @@ public class JSONSink implements Sink {
     	} catch (JSONException e) {
     	    e.printStackTrace();
     	}
-    	System.out.println(jsonObj.toString());
+    	if (debug) debug(jsonObj.toString());
+    	
     	//send jsonObj to Gephi
     	doSend(jsonObj, "updateGraph");
     
@@ -169,7 +230,8 @@ public class JSONSink implements Sink {
     	} catch (JSONException e) {
     	    e.printStackTrace();
     	}
-    	System.out.println(jsonObj.toString());
+    	if (debug) debug(jsonObj.toString());
+    	
     	//send jsonObj to Gephi
     	doSend(jsonObj, "updateGraph");
     
@@ -194,7 +256,8 @@ public class JSONSink implements Sink {
     	} catch (JSONException e) {
     	    e.printStackTrace();
     	}
-    	System.out.println(jsonObj.toString());
+    	if (debug) debug(jsonObj.toString());
+    	
     	//send jsonObj to Gephi
     	doSend(jsonObj, "updateGraph");
     	
@@ -219,7 +282,8 @@ public class JSONSink implements Sink {
     	} catch (JSONException e) {
     	    e.printStackTrace();
     	}
-    	System.out.println(jsonObj.toString());
+    	if (debug) debug(jsonObj.toString());
+    	
     	//send jsonObj to Gephi
     	doSend(jsonObj, "updateGraph");
     
@@ -243,7 +307,8 @@ public class JSONSink implements Sink {
     	} catch (JSONException e) {
     	    e.printStackTrace();
     	}
-    	System.out.println(jsonObj.toString());
+    	if (debug) debug(jsonObj.toString());
+    	
     	//send jsonObj to Gephi
     	doSend(jsonObj, "updateGraph");
     
@@ -269,7 +334,8 @@ public class JSONSink implements Sink {
     	} catch (JSONException e) {
     	    e.printStackTrace();
     	}
-    	System.out.println(jsonObj.toString());
+    	if (debug) debug(jsonObj.toString());
+    	
     	//send jsonObj to Gephi
     	doSend(jsonObj, "updateGraph");
     
@@ -290,7 +356,8 @@ public class JSONSink implements Sink {
     	} catch (JSONException e) {
     	    e.printStackTrace();
     	}
-    	System.out.println(jsonObj.toString());
+    	if (debug) debug(jsonObj.toString());
+    	
     	//send jsonObj to Gephi
     	doSend(jsonObj, "updateGraph");
     
@@ -311,7 +378,8 @@ public class JSONSink implements Sink {
     	} catch (JSONException e) {
     	    e.printStackTrace();
     	}
-    	System.out.println(jsonObj.toString());
+    	if (debug) debug(jsonObj.toString());
+    	
     	//send jsonObj to Gephi
     	doSend(jsonObj, "updateGraph");
     }
@@ -332,7 +400,8 @@ public class JSONSink implements Sink {
     	} catch (JSONException e) {
     	    e.printStackTrace();
     	}
-    	System.out.println(jsonObj.toString());
+    	if (debug) debug(jsonObj.toString());
+    	
     	//send jsonObj to Gephi
     	doSend(jsonObj, "updateGraph");
     
@@ -353,7 +422,8 @@ public class JSONSink implements Sink {
     	} catch (JSONException e) {
     	    e.printStackTrace();
     	}
-    	System.out.println(jsonObj.toString());
+    	if (debug) debug(jsonObj.toString());
+    	
     	//send jsonObj to Gephi
     	doSend(jsonObj, "updateGraph");
     }
@@ -378,9 +448,6 @@ public class JSONSink implements Sink {
             URL url = new URL("http", host, port, "/"+workspace+"?operation="+operation+"&format=JSON");
     
             URLConnection connection = url.openConnection();
-    
-            /*connection.setRequestProperty("Authorization", "Basic " +
-                    Base64.encodeBase64(("gephi:gephi").getBytes()));*/
             
             connection.setDoOutput(true);
             connection.connect();
@@ -394,15 +461,15 @@ public class JSONSink implements Sink {
                 out.print(obj.toString()+EOL);
                 out.flush();
                 out.close();
+                
                 //send event message to the server and read the result from the server
                 InputStream inputStream = connection.getInputStream();
                 BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream));
                 String line;
                 while ((line = bf.readLine()) != null) {
-                    System.out.println(line);
+                    if (debug) debug(line);
                 }
                 inputStream.close();
-    		    
             } catch (UnknownServiceException e) {
                 // protocol doesn't support output
             	e.printStackTrace();

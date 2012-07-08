@@ -43,6 +43,11 @@ public class JSONSource extends SourceBase {
      * the gephi source ID
      */
     private String sourceId;
+    
+    /**
+     * program debug mode
+     */
+    private boolean debug;
 
     /**
      * 
@@ -55,6 +60,44 @@ public class JSONSource extends SourceBase {
 	this.port = port;
 	this.workspace = workspace;
 	this.sourceId = String.format("<Gephi json stream %x>", System.nanoTime());
+	this.debug = false;
+    }
+    
+    /**
+     * @param host, the host of the Gephi server
+     * @param port, the port of the Gephi server
+     * @param workspace, the workspace name of the Gephi server
+     * @param debug, the program mode 
+     */
+    public JSONSource(String host, int port, String workspace, boolean debug) {
+	this.host = host;
+	this.port = port;
+	this.workspace = workspace;
+	this.sourceId = String.format("<Gephi json stream %x>", System.nanoTime());
+	this.debug = debug;
+    }
+    
+    /**
+     * set debug mode
+     * @param debug
+     */
+    public void setDebug(boolean debug) {
+	this.debug = debug;
+    }
+    
+    /**
+     * set debug message
+     * @param message
+     * @param data
+     */
+    private void debug(String message, Object... data) {
+	// System.err.print( LIGHT_YELLOW );
+	// System.err.printf("[//%s:%d | ", host, port);
+	// System.err.print( RESET );
+	System.err.printf(message, data);
+	// System.err.print( LIGHT_YELLOW );
+	System.err.printf("]%n");
+	// System.err.println( RESET );
     }
     
     /**
@@ -230,7 +273,8 @@ public class JSONSource extends SourceBase {
                 BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream));
                 String line;
                 while ((line = bf.readLine()) != null) {
-                    System.out.println(line);
+                    //System.out.println(line);
+                    if (debug) debug(line);
                     // each line is a event in Gephi
                     parse(line);
                 }
