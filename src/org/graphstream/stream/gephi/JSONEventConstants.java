@@ -27,6 +27,15 @@ public class JSONEventConstants {
         public String value() {
             return value;
         }
+        
+        public static Types fromString(String strtype) {
+            for (Types type: Types.values()) {
+                if (type.value.equalsIgnoreCase(strtype)) {
+                    return type;
+                }
+            }
+            throw new IllegalArgumentException("Invalid type");
+        }
     }
 	
     public enum Fields {    	
