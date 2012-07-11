@@ -76,9 +76,7 @@ public class JSONReceiver extends Thread {
 	this.sourceId = String.format("<Gephi json stream %x>", System.nanoTime());
 	this.debug = false;
 	
-	Graph g = new MultiGraph("graph",false,true);
-	currentStream = new ThreadProxyPipe(g);
-	//currentStream = new ThreadProxyPipe();
+	currentStream = new ThreadProxyPipe();
 	init();
 	start();
     }
