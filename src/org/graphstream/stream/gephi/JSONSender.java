@@ -18,7 +18,7 @@ import org.json.*;
  * @author wumalbert
  *
  */
-public class JSONSink implements Sink {
+public class JSONSender implements Sink {
     /**
      * the host of the Gephi server
      */
@@ -50,7 +50,7 @@ public class JSONSink implements Sink {
      * @param port, the port of the Gephi server
      * @param workspace, the workspace name of the Gephi server
      */
-    public JSONSink(String host, int port, String workspace) {
+    public JSONSender(String host, int port, String workspace) {
 	this.host = host;
 	this.port = port;
 	this.workspace = workspace;
@@ -64,7 +64,7 @@ public class JSONSink implements Sink {
      * @param workspace, the workspace name of the Gephi server
      * @param debug, the program mode 
      */
-    public JSONSink(String host, int port, String workspace, boolean debug) {
+    public JSONSender(String host, int port, String workspace, boolean debug) {
 	this.host = host;
 	this.port = port;
 	this.workspace = workspace;

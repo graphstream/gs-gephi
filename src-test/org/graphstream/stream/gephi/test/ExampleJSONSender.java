@@ -2,16 +2,21 @@ package org.graphstream.stream.gephi.test;
 
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
-import org.graphstream.stream.gephi.JSONSink;
+import org.graphstream.stream.gephi.JSONSender;
 
-public class ExampleJSONSink {
+/**
+ * a example of using the JSONStream sender
+ * @author wumalbert
+ *
+ */
+public class ExampleJSONSender {
     
     public static void main(String args[]) {
         
 	Graph graph = new SingleGraph("Tutorial 1");
 
-        JSONSink jsonSink = new JSONSink("localhost", 8080, "workspace0");
-	graph.addSink(jsonSink);
+        JSONSender sender = new JSONSender("localhost", 8080, "workspace0");
+	graph.addSink(sender);
 		
 	//graph.display();
 		

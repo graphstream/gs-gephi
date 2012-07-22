@@ -6,7 +6,7 @@ import java.net.UnknownHostException;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.stream.gephi.JSONReceiver;
-import org.graphstream.stream.gephi.JSONSink;
+import org.graphstream.stream.gephi.JSONSender;
 import org.graphstream.stream.thread.ThreadProxyPipe;
 
 /**
@@ -22,10 +22,10 @@ public class ExampleJSONStream {
 	// ----- On the receiver side -----
 	//
 	// - a graph that will display the received events
-	Graph g = new MultiGraph("G");
+	Graph g = new MultiGraph("G", false, true);
 	g.display();
 	// - the receiver that waits for events
-	JSONReceiver receiver = new JSONReceiver("localhost", 8080, "workspace0", true);
+	JSONReceiver receiver = new JSONReceiver("localhost", 8080, "workspace0");
 	// - received events end up in the "default" pipe
 	ThreadProxyPipe pipe = receiver.getStream();
 	// - plug the pipe to the sink of the graph
@@ -37,10 +37,10 @@ public class ExampleJSONStream {
 	    // - the original graph from which events are generated
 		Graph g = new MultiGraph("G");
 		// - the sender
-		JSONSink jsonSink = new JSONSink("localhost", 8080, "workspace0");
+		JSONSender sender = new JSONSender("localhost", 8080, "workspace0");
 		// - plug the graph to the sender so that graph events can be
 		// sent automatically
-		g.addSink(jsonSink);
+		g.addSink(sender);
 		// - generate some events on the client side
 		String style = "node{fill-mode:plain;fill-color:#567;size:6px;}";
 		g.addAttribute("stylesheet", style);
