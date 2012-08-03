@@ -37,7 +37,8 @@ public class JSONSender implements Sink {
     /**
      * End of Line
      */
-    private static String EOL = "\r\n";
+    //private static String EOL = "\r\n";
+    private static String EOL = "\r";
     
     /**
      * program debug mode
@@ -467,7 +468,7 @@ public class JSONSender implements Sink {
                 BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream));
                 String line;
                 while ((line = bf.readLine()) != null) {
-                    if (debug) debug(line);
+                    //if (debug) debug(line);
                 }
                 inputStream.close();
             } catch (UnknownServiceException e) {

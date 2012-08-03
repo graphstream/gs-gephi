@@ -26,6 +26,7 @@ public class ExampleJSONStream {
 	g.display();
 	// - the receiver that waits for events
 	JSONReceiver receiver = new JSONReceiver("localhost", 8080, "workspace0");
+	receiver.setDebug(true);
 	// - received events end up in the "default" pipe
 	ThreadProxyPipe pipe = receiver.getStream();
 	// - plug the pipe to the sink of the graph
