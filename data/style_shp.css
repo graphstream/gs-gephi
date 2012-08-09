@@ -1,0 +1,55 @@
+node {
+	size: 10px;
+	text-visibility-mode: hidden;
+}
+
+node.supply_balanced {
+	size: 20px;
+	fill-color: #404080;
+}
+
+node.supply_unbalanced {
+	size: 20px;
+	fill-color: #0000FF;
+}
+
+node.demand_balanced {
+	fill-color: #804040;
+}
+
+node.demand_unbalanced {
+	size: 20px;
+	fill-color: #FF0000;
+}
+
+node.trans_balanced {
+	fill-color: #C0C0C0;
+}
+
+node.trans_unbalanced {
+	fill-color: #808080;
+}
+
+node.to_remove {
+	size: 20px;
+	fill-color: orange;
+}
+
+edge {
+	text-visibility-mode: hidden;
+}
+
+edge.nonbasic_lower {
+	size: 1px;
+	fill-color: #C0C0C0;
+}
+
+edge.basic {
+	size: 2px;
+	fill-color: #000080;
+}
+
+edge.nonbasic_upper {
+	size: 2px;
+	fill-color: #000000;
+}
