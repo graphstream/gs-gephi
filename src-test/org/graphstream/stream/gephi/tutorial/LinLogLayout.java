@@ -1,134 +1,87 @@
 package org.graphstream.stream.gephi.tutorial;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
+
 import org.graphstream.graph.Graph;
-import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.stream.GraphParseException;
-import org.graphstream.ui.swingViewer.Viewer;
-import org.graphstream.algorithm.ConnectedComponents;
-import org.graphstream.algorithm.measure.Modularity;
-import org.graphstream.graph.Edge;
-import org.graphstream.stream.ProxyPipe;
-import org.graphstream.stream.thread.ThreadProxyPipe;
-import org.graphstream.ui.graphicGraph.GraphPosLengthUtils;
-import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants.Units;
-import org.graphstream.ui.layout.springbox.implementations.LinLog;
-import org.graphstream.ui.spriteManager.Sprite;
-import org.graphstream.ui.spriteManager.SpriteManager;
 import org.graphstream.stream.gephi.JSONReceiver;
+import org.graphstream.stream.gephi.JSONSender;
+import org.graphstream.stream.thread.ThreadProxyPipe;
+import org.graphstream.ui.layout.springbox.implementations.LinLog;
 
 /**
- * a simple example of using the JSONStream receiver
- * @author wumalbert
- *
+ * A simple example of use of the JSONSink and JSONReceiver to communicate with Gephi.
+ * JSONSink sends events to Gephi, and JSONReceiver receiver events from Gephi
+ * @author Min WU
+
  */
 public class LinLogLayout {
     
-    public static void main(String args[]) throws IOException, GraphParseException {
-	
-	(new LinLogLayout()).findCommunities();
-    }
-	
-    private Graph graph;
-    private Viewer viewer;
-	
     private LinLog layout;
     private double a = 0;
     private double r = -1.3;
     private double force = 3;
-    
-    private ProxyPipe fromViewer;
 	
-    private double cutThreshold = 1;
+    public static void main(String[] args) throws UnknownHostException,
+	        IOException, InterruptedException, GraphParseException {
+	new LinLogLayout().findCommunities();
+    }
 	
-    private ConnectedComponents cc;
-    private SpriteManager sm;
-    private Sprite ccCount;
-    private Sprite modValue;
-    private Modularity modularity;
-	
-    private JSONReceiver receiver;
-	
-    public void findCommunities() throws IOException, GraphParseException {
-	
-	//graph = new MultiGraph("G",false,true);
-	graph = new SingleGraph("communities");
-	viewer = graph.display(false);
-	fromViewer = viewer.newThreadProxyOnGraphicGraph();
-	layout = new LinLog(false);
-	cc = new ConnectedComponents(graph);
-	sm = new SpriteManager(graph);
-	ccCount = sm.addSprite("CC");
-	modularity = new Modularity("module");
-	modValue = sm.addSprite("M");
-	
-	modularity.init(graph);
-	layout.configure(a, r, true, force);
-	cc.setCutAttribute("cut");
-	ccCount.setPosition(Units.PX, 20, 20, 0);
-	cc.setCountAttribute("module");
-	modValue.setPosition(Units.PX, 20, 40, 0);
-	layout.addSink(graph);
-	graph.addSink(layout);
-	fromViewer.addSink(graph);
-		
-	graph.addAttribute("ui.antialias");
-	graph.addAttribute("ui.stylesheet", styleSheet);
-		
-		
+    public void findCommunities() throws IOException, InterruptedException, GraphParseException {
 	// ----- On the receiver side -----
 	//
-	// a graph that will display the received events
-	
-	// the receiver that waits for events
-	receiver = new JSONReceiver("localhost", 8080, "workspace0");
+	// - a graph that will display the received events
+	Graph g = new MultiGraph("G", false, true);
+	g.display(true);
+	// - the receiver that waits for events
+	JSONReceiver receiver = new JSONReceiver("localhost", 8080, "workspace0");
+	receiver.setDebug(true);
+	// - received events end up in the "default" pipe
 	ThreadProxyPipe pipe = receiver.getStream();
-	// plug the pipe to the sink of the graph
-	pipe.addSink(graph);
-	// The receiver pro-actively checks for events on the ThreadProxyPipe
+	// - plug the pipe to the sink of the graph
+	pipe.addSink(g);
 	
-	pipe.pump();
-	while(!graph.hasAttribute("ui.viewClosed")) {
-	    pipe.pump();
-	    fromViewer.pump();
-	    layout.compute();
-	    showCommunities();
-	    ccCount.setAttribute("ui.label", 
-		    String.format("Modules %d", cc.getConnectedComponentsCount()));
-	    modValue.setAttribute("ui.label", 
-		    String.format("Modularity %f", modularity.getMeasure()));
-	}
-    }
+//	layout = new LinLog(false);
+//	layout.configure(a,r,true,force);
+//	layout.addSink(g);
+//	g.addSink(layout);
 	
-    public void showCommunities() {
-	int nEdges = graph.getEdgeCount();
-	double averageDist = 0;
-	double edgesDist[] = new double[nEdges];
-	
-	for (int i = 0; i < nEdges; ++i ) {
-	    Edge edge = graph.getEdge(i);
-	    edgesDist[i] = GraphPosLengthUtils.edgeLength(edge);
-	    averageDist += edgesDist[i];
-	}
-	averageDist /= nEdges; 
-		
-	for (int i = 0; i < nEdges; ++i) {
-	    Edge edge = graph.getEdge(i);
-	    if (edgesDist[i] > averageDist * cutThreshold) {
-		edge.addAttribute("ui.class", "cut");
-		edge.addAttribute("cut");
-	    } else {
-		edge.removeAttribute("ui.class");
-		edge.removeAttribute("cut");
+	// ----- The sender side (in another thread) ------
+	//
+	new Thread() {
+	    public void run() {
+	    // - the original graph from which events are generated
+		Graph g = new MultiGraph("G");
+		// - the sender
+		JSONSender sender = new JSONSender("localhost", 8080, "workspace0");
+		// - plug the graph to the sender so that graph events can be
+		// sent automatically
+		g.addSink(sender);
+		// - generate some events on the client side
+		String style = "node{fill-mode:plain;fill-color:#567;size:6px;}";
+		g.addAttribute("stylesheet", style);
+		g.addAttribute("ui.antialias", true);
+		g.addAttribute("layout.stabilization-limit", 0);
+		for (int i = 0; i < 50; i++) {
+			g.addNode(i + "");
+			if (i > 0) {
+			    g.addEdge(i + "-" + (i - 1), i + "", (i - 1) + "");
+			    g.addEdge(i + "--" + (i / 2), i + "", (i / 2) + "");
+			}
+		}
 	    }
+	}.start();
+
+	// ----- Back to the receiver side -----
+	//
+	// -The receiver pro-actively checks for events on the ThreadProxyPipe
+	while (true) {
+	    pipe.pump();
+//	    layout.compute();
+	    Thread.sleep(100);
 	}
     }
-	
-    protected static String styleSheet = 
-	    "node { size: 7px; fill-color: rgb(150,150,150); }" + 
-            "edge { size: 2px; fill-color: rgb(255,50,50); }" + 
-	    "edge.cut { fill-color: rgba(200,200,200,128); }" + 
-            "sprite#CC { size: 0px; text-color: rgb(150,100,100); text-size: 20; }" +
-	    "sprite#M { size: 0px; text-color: rgb(100,150,100); text-size: 20; }";
+    
 }
