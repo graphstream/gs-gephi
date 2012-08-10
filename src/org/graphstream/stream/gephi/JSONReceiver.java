@@ -16,6 +16,7 @@ import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.AbstractElement.AttributeChangeEvent;
 import org.graphstream.stream.gephi.JSONEventConstants.Fields;
 import org.graphstream.stream.gephi.JSONEventConstants.Types;
+import org.graphstream.stream.sync.SourceTime;
 import org.graphstream.stream.thread.ThreadProxyPipe;
 import org.graphstream.stream.Source;
 import org.graphstream.stream.SourceBase.ElementType;
@@ -46,8 +47,9 @@ public class JSONReceiver extends Thread {
     /**
      * the gephi source ID
      */
-    private String sourceId; 
+    protected String sourceId; 
     
+    protected SourceTime sourceTime;
     /**
      * The current pipe commands are being written to.
     */
@@ -76,6 +78,7 @@ public class JSONReceiver extends Thread {
 	this.sourceId = String.format("<Gephi json stream %x>", System.nanoTime());
 	this.debug = false;
 	
+	this.sourceTime = new SourceTime(this.sourceId);
 	currentStream = new ThreadProxyPipe();
 	init();
 	start();
@@ -232,7 +235,7 @@ public class JSONReceiver extends Thread {
         
         if (gObjs.has("filter")) {
             if (gObjs.getString("filter").equals("ALL")) {
-        	currentStream.sendGraphCleared(sourceId);
+        	currentStream.graphCleared(sourceId, sourceTime.newEvent());
             }
             /*Map<String, Object> attributes = null;
             if (gObjs.has("attributes")) {
@@ -247,7 +250,12 @@ public class JSONReceiver extends Thread {
         }
 
         if (eventType.equals(Types.CG)) {
-            this.sendAttributes(gObjs, null, ElementType.GRAPH, AttributeChangeEvent.CHANGE);
+            Iterator<String> itrAttrs = gObjs.keys();
+            while (itrAttrs.hasNext()) {
+        	String key = itrAttrs.next();
+        	Object value = gObjs.get(key);
+        	currentStream.graphAttributeChanged(sourceId, sourceTime.newEvent(), key, null, value);
+            }
             return;
         }
         
@@ -256,17 +264,26 @@ public class JSONReceiver extends Thread {
             //GraphEvent event = null;
             String elementId = it.next();
             JSONObject gObj = (JSONObject)gObjs.get(elementId);
+            Iterator<String> itrAttrs = gObj.keys();
             
             switch( eventType ) {
             case AN:
-        	currentStream.sendNodeAdded(sourceId, elementId);
-        	this.sendAttributes(gObj, elementId, ElementType.NODE, AttributeChangeEvent.ADD);
+        	currentStream.nodeAdded(sourceId, sourceTime.newEvent(), elementId);
+        	while (itrAttrs.hasNext()) {
+        	    String key = itrAttrs.next();
+        	    Object value = gObj.get(key);
+        	    currentStream.nodeAttributeAdded(sourceId, sourceTime.newEvent(), elementId, key, value);
+        	}
         	break;
             case CN:
-        	this.sendAttributes(gObj, elementId, ElementType.NODE, AttributeChangeEvent.CHANGE);
+        	while (itrAttrs.hasNext()) {
+        	    String key = itrAttrs.next();
+        	    Object value = gObj.get(key);
+        	    currentStream.nodeAttributeChanged(sourceId, sourceTime.newEvent(), elementId, key, null, value);
+        	}
         	break;
             case DN:
-        	currentStream.sendNodeRemoved(sourceId, elementId);
+        	currentStream.nodeRemoved(sourceId, sourceTime.newEvent(), elementId);
         	break;
             case AE:
                 String fromNodeId = gObj.getString(Fields.SOURCE.value());
@@ -276,47 +293,30 @@ public class JSONReceiver extends Thread {
                 if (gObj.has(Fields.DIRECTED.value())) {
                     directed = Boolean.valueOf(gObj.getString(Fields.DIRECTED.value()));
                 }
-                currentStream.sendEdgeAdded(sourceId, elementId, fromNodeId, toNodeId, directed);
-               
-                Iterator<String> i2 = gObj.keys();
-                while (i2.hasNext()) {
-                    String key = i2.next();
+                currentStream.edgeAdded(sourceId, sourceTime.newEvent(), elementId, fromNodeId, toNodeId, directed);
+                while (itrAttrs.hasNext()) {
+                    String key = itrAttrs.next();
                     
                     if (key.equals(Fields.SOURCE.value())) continue;
                     if (key.equals(Fields.TARGET.value())) continue;
                     if (key.equals(Fields.DIRECTED.value())) continue;
 
                     Object value = gObj.get(key);
-                    currentStream.sendAttributeChangedEvent(sourceId, elementId, ElementType.EDGE, 
-                	    key, AttributeChangeEvent.ADD, null, value);
+                    currentStream.edgeAttributeAdded(sourceId, sourceTime.newEvent(), elementId, key, value);
                 }
         	break;
             case CE:
-        	this.sendAttributes(gObj, elementId, ElementType.EDGE, AttributeChangeEvent.CHANGE);
+        	while (itrAttrs.hasNext()) {
+        	    String key = itrAttrs.next();
+        	    Object value = gObj.get(key);
+        	    currentStream.edgeAttributeChanged(sourceId, sourceTime.newEvent(), elementId, key, null, value);
+        	}
         	break;
             case DE:
-        	currentStream.sendEdgeRemoved(sourceId, elementId);
+        	currentStream.edgeRemoved(sourceId, sourceTime.newEvent(), elementId);
         	break;
             
             }
         }
-    }
-
-    /**
-     * read attributes from the JSON object and send them to GraphStream 
-     * @param gObj, the attributes JSON Object
-     * @param elementId, elementId
-     * @param elementType, element type, GRAPH, NODE, EDGE
-     * @param changeEventType, attribute change event type, AND, CHANGE, REMOVE 
-     * @throws JSONException
-     */
-    private void sendAttributes(JSONObject gObj, String elementId, ElementType elementType, 
-	    AttributeChangeEvent changeEventType) throws JSONException {
-	Iterator<String> it = gObj.keys();
-	while (it.hasNext()) {
-	    String key = it.next();
-	    Object value = gObj.get(key);
-	    currentStream.sendAttributeChangedEvent(sourceId, elementId, elementType, key, changeEventType, null, value);
-	}
     }
 }
