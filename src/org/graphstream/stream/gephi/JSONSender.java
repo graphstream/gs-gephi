@@ -248,12 +248,26 @@ public class JSONSender implements Sink {
     	//make an JSON object
     	JSONObject jsonObj = null;
     	try {
-    	    jsonObj = new JSONObject()
-    	    	.put(Types.CN.value(), new JSONObject()
-    	    		.put(nodeId, new JSONObject()
-    	    			.put(attribute, value)
+    	    if (attribute.equalsIgnoreCase("xyz")) {
+    		jsonObj = new JSONObject()
+    		    .put(Types.CN.value(), new JSONObject()
+    		        .put(nodeId, new JSONObject()
+//    		            .put("x", ((Double)((Object[])value)[0])*200)
+//		            .put("y", ((Double)((Object[])value)[1])*200)
+//		            .put("z", ((Double)((Object[])value)[2])*200)
+    		            .put("x", ((Double)((Object[])value)[0]))
+	                    .put("y", ((Double)((Object[])value)[1]))
+	                    .put("z", ((Double)((Object[])value)[2]))
     	    		    )
-    	    	    );
+    	    		);
+    	    } else {
+    		jsonObj = new JSONObject()
+    		    .put(Types.CN.value(), new JSONObject()
+    		        .put(nodeId, new JSONObject()
+    		            .put(attribute, value)
+    	    		    )
+    	    	        );
+    	    }
     	} catch (JSONException e) {
     	    e.printStackTrace();
     	}
@@ -274,12 +288,27 @@ public class JSONSender implements Sink {
     	//make an JSON object
     	JSONObject jsonObj = null;
     	try {
-    	    jsonObj = new JSONObject()
-    	    		.put(Types.CN.value(), new JSONObject()
-    	    			.put(nodeId, new JSONObject()
-    	    				.put(attribute, newValue)
-    	    			    )
-    	    		    );
+    	    if (attribute.equalsIgnoreCase("xyz")) {
+    		jsonObj = new JSONObject()
+    		    .put(Types.CN.value(), new JSONObject()
+    		        .put(nodeId, new JSONObject()
+//    		            .put("x", ((Double)((Object[])newValue)[0])*200)
+//    		            .put("y", ((Double)((Object[])newValue)[1])*200)
+//    		            .put("z", ((Double)((Object[])newValue)[2])*200)
+    		            .put("x", ((Double)((Object[])newValue)[0]))
+		            .put("y", ((Double)((Object[])newValue)[1]))
+		            .put("z", ((Double)((Object[])newValue)[2]))
+		            
+    		            )
+    		        );
+	    } else {
+		jsonObj = new JSONObject()
+		    .put(Types.CN.value(), new JSONObject()
+		        .put(nodeId, new JSONObject()
+		            .put(attribute, newValue)
+	    		    )
+	    	        );
+	    }
     	} catch (JSONException e) {
     	    e.printStackTrace();
     	}

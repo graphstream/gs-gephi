@@ -1,8 +1,12 @@
 package org.graphstream.stream.gephi.test;
 
 import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.stream.gephi.JSONSender;
+import org.graphstream.ui.graphicGraph.GraphicGraph;
+import org.graphstream.ui.graphicGraph.GraphicNode;
+import org.graphstream.ui.swingViewer.Viewer;
 
 /**
  * a example of using the JSONStream sender
@@ -15,10 +19,11 @@ public class ExampleJSONSender {
         
 	Graph graph = new SingleGraph("Tutorial 1");
 
+	Viewer viewer = graph.display();
+	
         JSONSender sender = new JSONSender("localhost", 8080, "workspace0");
+        sender.setDebug(true);
 	graph.addSink(sender);
-		
-	//graph.display();
 		
         graph.addNode("A");
         graph.addNode("B");
@@ -29,7 +34,7 @@ public class ExampleJSONSender {
         graph.addEdge("CA", "C", "A");
         sleep();
         
-	//graph.clear();
+        //graph.clear();
     }
 	
     protected static void sleep() {
