@@ -6,20 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.UnknownServiceException;
 import java.util.Iterator;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.implementations.MultiGraph;
-import org.graphstream.graph.implementations.AbstractElement.AttributeChangeEvent;
 import org.graphstream.stream.gephi.JSONEventConstants.Fields;
 import org.graphstream.stream.gephi.JSONEventConstants.Types;
 import org.graphstream.stream.sync.SourceTime;
 import org.graphstream.stream.thread.ThreadProxyPipe;
-import org.graphstream.stream.Source;
-import org.graphstream.stream.SourceBase.ElementType;
 
 /**
  * connect GraphStream to Gephi
