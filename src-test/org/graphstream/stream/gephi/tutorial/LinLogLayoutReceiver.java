@@ -24,9 +24,7 @@ public class LinLogLayoutReceiver {
 	(new LinLogLayoutReceiver()).findCommunities();
     }
 
-    //graph object
     private Graph graph;
-    //view object
     private Viewer viewer;
     
     //LinLog layout parameter
@@ -38,7 +36,6 @@ public class LinLogLayoutReceiver {
     //a proxy pipe to do interaction in the GS viewer
     private ProxyPipe fromViewer;
     
-    //receive 
     private JSONReceiver receiver;
     
     public void findCommunities() throws IOException, GraphParseException {
