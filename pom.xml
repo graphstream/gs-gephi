@@ -33,7 +33,7 @@
 		<dependency>
 			<groupId>org.graphstream</groupId>
 			<artifactId>gs-core</artifactId>
-			<version>1.0</version>
+			<version>1.2-git</version>
 			<optional>false</optional>
 		</dependency>
 	</dependencies>
