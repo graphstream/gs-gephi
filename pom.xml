@@ -25,17 +25,17 @@
       <version>20070829</version>
     </dependency>
     <dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.3.1</version>
-			<optional>false</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.graphstream</groupId>
-			<artifactId>gs-core</artifactId>
-			<version>1.2-git</version>
-			<optional>false</optional>
-		</dependency>
-	</dependencies>
+	  <groupId>junit</groupId>
+	  <artifactId>junit</artifactId>
+	  <version>4.3.1</version>
+	  <optional>false</optional>
+	</dependency>
+	<dependency>
+	  <groupId>org.graphstream</groupId>
+	  <artifactId>gs-core</artifactId>
+	  <version>1.2-git</version>
+	  <optional>false</optional>
+	</dependency>
+  </dependencies>
 
 </project>
