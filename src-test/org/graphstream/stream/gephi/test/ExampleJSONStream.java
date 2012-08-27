@@ -10,22 +10,24 @@ import org.graphstream.stream.gephi.JSONSender;
 import org.graphstream.stream.thread.ThreadProxyPipe;
 
 /**
- * A simple example of use of the JSONSink and JSONReceiver to communicate with Gephi.
- * JSONSink sends events to Gephi, and JSONReceiver receiver events from Gephi
+ * A simple example of use of the JSONSink and JSONReceiver to communicate with
+ * Gephi. JSONSink sends events to Gephi, and JSONReceiver receiver events from
+ * Gephi
+ * 
  * @author Min WU
-
  */
 public class ExampleJSONStream {
-    
-    public static void main(String[] args) throws UnknownHostException, 
-    			IOException, InterruptedException {
+
+    public static void main(String[] args) throws UnknownHostException,
+	    IOException, InterruptedException {
 	// ----- On the receiver side -----
 	//
 	// - a graph that will display the received events
 	Graph g = new MultiGraph("G", false, true);
 	g.display();
 	// - the receiver that waits for events
-	JSONReceiver receiver = new JSONReceiver("localhost", 8080, "workspace0");
+	JSONReceiver receiver = new JSONReceiver("localhost", 8080,
+		"workspace0");
 	receiver.setDebug(true);
 	// - received events end up in the "default" pipe
 	ThreadProxyPipe pipe = receiver.getStream();
@@ -35,10 +37,11 @@ public class ExampleJSONStream {
 	//
 	new Thread() {
 	    public void run() {
-	    // - the original graph from which events are generated
+		// - the original graph from which events are generated
 		Graph g = new MultiGraph("G");
 		// - the sender
-		JSONSender sender = new JSONSender("localhost", 8080, "workspace0");
+		JSONSender sender = new JSONSender("localhost", 8080,
+			"workspace0");
 		// - plug the graph to the sender so that graph events can be
 		// sent automatically
 		g.addSink(sender);
@@ -48,11 +51,11 @@ public class ExampleJSONStream {
 		g.addAttribute("ui.antialias", true);
 		g.addAttribute("layout.stabilization-limit", 0);
 		for (int i = 0; i < 50; i++) {
-			g.addNode(i + "");
-			if (i > 0) {
-			    g.addEdge(i + "-" + (i - 1), i + "", (i - 1) + "");
-			    g.addEdge(i + "--" + (i / 2), i + "", (i / 2) + "");
-			}
+		    g.addNode(i + "");
+		    if (i > 0) {
+			g.addEdge(i + "-" + (i - 1), i + "", (i - 1) + "");
+			g.addEdge(i + "--" + (i / 2), i + "", (i / 2) + "");
+		    }
 		}
 	    }
 	}.start();

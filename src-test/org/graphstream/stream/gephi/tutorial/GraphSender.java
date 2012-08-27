@@ -9,18 +9,18 @@ import org.graphstream.stream.gephi.JSONSender;
  * @author Min WU
  */
 public class GraphSender {
-    
+
     public static void main(String args[]) {
 	Graph graph = new MultiGraph("Tutorial 1 GraphSender");
 
 	graph.display();
-	
-        JSONSender sender = new JSONSender("localhost", 8080, "workspace0");
-        
-        // plug the graph to the sender so that graph events can be
-     	// sent automatically
+
+	JSONSender sender = new JSONSender("localhost", 8080, "workspace0");
+
+	// plug the graph to the sender so that graph events can be
+	// sent automatically
 	graph.addSink(sender);
-        
+
 	// generate the graph on the client side
 	String style = "node{fill-mode:plain;fill-color:#567;size:6px;}";
 	graph.addAttribute("stylesheet", style);
