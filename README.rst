@@ -1,7 +1,7 @@
 gs-gephi
 ========
 
-An interconnection project between Gephi and GraphStream based on the `Graph Streaming API`_. You can check the `manual`_ to see the detailed discription and tutorials showing how to use it.
+An interconnection project between Gephi and GraphStream based on the `Graph Streaming API`_. This project is distributed under MIT license within a LICENSE file in it.
 
 Install
 -----------
